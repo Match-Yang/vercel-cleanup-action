@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Vercel cleanup
-        uses: OWNER/vercel-cleanup-action@v1
+        uses: Match-Yang/vercel-cleanup-action@v1
         with:
           vercel_token: ${{ secrets.VERCEL_CLI_TOKEN }}
           default_projects: "app-directory"
@@ -41,7 +41,6 @@ jobs:
           verbose: ${{ github.event.inputs.verbose || false }}
 ```
 
-Note: replace `OWNER/vercel-cleanup-action@v1` with your repository coordinates.
 
 ## License
 MIT
