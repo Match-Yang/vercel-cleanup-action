@@ -1,0 +1,57 @@
+name: "Vercel Deployments Cleanup"
+description: "Clean up Vercel deployments in Building/Queued by keeping the newest one and removing the rest"
+author: "fastcar-web"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "18"
+
+    - name: Install Vercel CLI
+      shell: bash
+      run: |
+        npm install -g vercel@latest
+        vercel --version
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.9"
+
+    - name: Run cleanup script
+      shell: bash
+      env:
+        VERCEL_CLI_TOKEN: ${{ inputs.vercel_token }}
+        DEFAULT_PROJECTS: ${{ inputs.default_projects }}
+        INPUT_PROJECTS: ${{ inputs.projects }}
+        VERCEL_CLEANUP_VERBOSE: ${{ inputs.verbose }}
+        AUTO_CONFIRM_AGGRESSIVE_CLEANUP: ${{ inputs.aggressive_cleanup }}
+      run: |
+        python "$GITHUB_ACTION_PATH/scripts/cleanup_vercel_deployments.py"
+
+inputs:
+  vercel_token:
+    description: "Vercel CLI token (recommended to pass via secrets)"
+    required: true
+  default_projects:
+    description: "Comma separated default project list"
+    required: false
+    default: ""
+  projects:
+    description: "Comma separated project list to process (overrides default when provided)"
+    required: false
+    default: ""
+  verbose:
+    description: "Verbose logs"
+    required: false
+    default: "false"
+  aggressive_cleanup:
+    description: "Enable aggressive cleanup fallback (may delete wrong deployments)"
+    required: false
+    default: "false"
+
+branding:
+  icon: "trash-2"
+  color: "purple"
